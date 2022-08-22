@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace TechJobsConsole
 {
@@ -42,6 +43,7 @@ namespace TechJobsConsole
                     {
                         List<string> results = JobData.FindAll(columnChoice);
 
+
                         Console.WriteLine("\n*** All " + columnChoices[columnChoice] + " Values ***");
                         foreach (string item in results)
                         {
@@ -57,17 +59,19 @@ namespace TechJobsConsole
                     // What is their search term?
                     Console.WriteLine("\nSearch term: ");
                     string searchTerm = Console.ReadLine();
+                    string searchInput = searchTerm.ToUpperInvariant();
 
                     List<Dictionary<string, string>> searchResults;
 
                     // Fetch results
                     if (columnChoice.Equals("all"))
                     {
-                        Console.WriteLine("Search all fields not yet implemented.");
+                        searchResults = JobData.FindByValue(searchInput);
+                        PrintJobs(searchResults);
                     }
                     else
                     {
-                        searchResults = JobData.FindByColumnAndValue(columnChoice, searchTerm);
+                        searchResults = JobData.FindByColumnAndValue(columnChoice, searchInput);
                         PrintJobs(searchResults);
                     }
                 }
@@ -118,7 +122,28 @@ namespace TechJobsConsole
 
         private static void PrintJobs(List<Dictionary<string, string>> someJobs)
         {
-            Console.WriteLine("PrintJobs is not implemented yet");
+            if (someJobs.Count >= 1)
+            {
+                int jobCount = 1;
+
+                //Bonus Mission: Sort alphabetically. Using System.Linq; Sorting operators OrderBy() ThenBy()/ThenByDescending extension methods.
+                //More reading: https://www.tutorialsteacher.com/linq/linq-sorting-operators-thenby-thenbydescending
+
+                foreach (Dictionary<string, string> job in someJobs.OrderBy(field => field["employer"]).ThenByDescending(field => field["name"]))
+                {
+                    Console.WriteLine($"********************\nJob Listing - {jobCount}\n********************\n");
+                    foreach (KeyValuePair<string, string> kvp in job)
+                    {
+                        Console.WriteLine("{0}: {1}", kvp.Key, kvp.Value);
+                    }
+                    Console.WriteLine("********************\n\n");
+                    jobCount++;
+                }
+            }
+            else
+            {
+                Console.WriteLine("\n\n****************\nNo results found\n****************");
+            }
         }
     }
 }

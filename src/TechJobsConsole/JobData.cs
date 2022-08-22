@@ -2,6 +2,8 @@
 using System.IO;
 using System.Reflection;
 using System.Text;
+using System;
+
 
 namespace TechJobsConsole
 {
@@ -13,7 +15,21 @@ namespace TechJobsConsole
         public static List<Dictionary<string, string>> FindAll()
         {
             LoadData();
-            return AllJobs;
+
+            // Bonus Mission: CopyofAllJobs , return a copy of of AllJobs
+            List<Dictionary<string, string>> CopyOfAllJobs = new List<Dictionary<string, string>>(AllJobs);
+ 
+            return CopyOfAllJobs;   
+        }
+        
+        //Bonus Mission: created a new private object
+        /*
+         * return a copy of AllJobs with MemberwiseClone() deep copy.
+         * not sure if i used MemberwiseClone properly but my code is working
+         */
+        private static object MemberwiseClone(List<Dictionary<string, string>> allJobs)
+        {
+            return MemberwiseClone(AllJobs);
         }
 
         /*
@@ -26,16 +42,47 @@ namespace TechJobsConsole
 
             List<string> values = new List<string>();
 
+            
             foreach (Dictionary<string, string> job in AllJobs)
             {
                 string aValue = job[column];
 
                 if (!values.Contains(aValue))
                 {
-                    values.Add(aValue);
+                    values.Add(aValue.ToUpperInvariant());
                 }
             }
+
+            values.Sort(); //Bonus Mission: Sort results alphabetically.
             return values;
+        }
+
+
+        /* Create public static method called FindByValue
+        * RETURNS a LIST of searchTerms in AllJobs columns,
+        * without duplicates
+         */
+        public static List<Dictionary<string, string>> FindByValue(string searchTerm)
+        {
+            LoadData();
+
+            List<Dictionary<string, string>> jobs = new List<Dictionary<string, string>>();
+  
+                foreach (Dictionary<string, string> row in AllJobs)
+                {
+                    foreach(KeyValuePair<string, string> field in row)
+                    {
+                    string aValue = field.Value.ToUpperInvariant();
+
+                    if (aValue.IndexOf(searchTerm.ToUpperInvariant(), StringComparison.OrdinalIgnoreCase) >= 0)
+                    {
+                        jobs.Add(row);
+                        break;
+                    }
+                }
+            }
+            
+            return jobs;
         }
 
         public static List<Dictionary<string, string>> FindByColumnAndValue(string column, string value)
@@ -49,12 +96,13 @@ namespace TechJobsConsole
             {
                 string aValue = row[column];
 
-                if (aValue.Contains(value))
+                if (aValue.IndexOf(value, StringComparison.OrdinalIgnoreCase) >= 0)
                 {
                     jobs.Add(row);
                 }
             }
 
+            
             return jobs;
         }
 
@@ -135,7 +183,7 @@ namespace TechJobsConsole
             // Add the final value
             rowValues.Add(valueBuilder.ToString());
             valueBuilder.Clear();
-
+            
             return rowValues.ToArray();
         }
     }
