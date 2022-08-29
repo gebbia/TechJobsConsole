@@ -49,7 +49,7 @@ namespace TechJobsConsole
 
                 if (!values.Contains(aValue))
                 {
-                    values.Add(aValue.ToUpperInvariant());
+                    values.Add(aValue);
                 }
             }
 
